@@ -6,7 +6,7 @@ const headers = {
 exports.ok = (data, statusCode = 200) => ({
   statusCode,
   headers,
-  body: JSON.stringify(data),  // ← debe ser string, no objeto
+  body: JSON.stringify(data),
   isBase64Encoded: false
 });
 
