@@ -1,0 +1,26 @@
+{
+  "name": "test_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lautaroG25/test_api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lautaroG25/test_api/issues"
+  },
+  "homepage": "https://github.com/lautaroG25/test_api#readme",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1039.0",
+    "@aws-sdk/lib-dynamodb": "^3.1039.0",
+    "uuid": "^14.0.0"
+  }
+}
