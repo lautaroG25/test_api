@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ventas & Compras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0e0e0e;
+      --surface:   #161616;
+      --surface2:  #1f1f1f;
+      --border:    #2a2a2a;
+      --accent:    #d4f060;
+      --accent-dim:#8fa83a;
+      --danger:    #ff5c5c;
+      --text:      #e8e8e0;
+      --muted:     #666660;
+      --mono:      'DM Mono', monospace;
+      --sans:      'Syne', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 13px;
+      font-family: var(--mono);
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Nav tabs ── */
+    nav {
+      display: flex;
+      gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px;
+    }
+
+    nav button {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+
+    nav button.active {
+      background: var(--accent);
+      color: #0e0e0e;
+      font-weight: 500;
+    }
+
+    nav button:not(.active):hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      padding: 2.5rem 2rem;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ── Views ── */
+    .view { display: none; animation: fadeIn 0.2s ease; }
+    .view.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── View header ── */
+    .view-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+
+    .view-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .view-title span {
+      color: var(--accent);
+    }
+
+    .count-badge {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    /* ── API url banner ── */
+    .api-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 2rem;
+    }
+
+    .api-banner label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .api-banner input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .api-banner input::placeholder { color: var(--muted); }
+
+    /* ── Tabla ── */
+    .table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 400;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: var(--surface); }
+
+    tbody td {
+      padding: 14px 16px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .td-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .td-price {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .td-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── Botón borrar ── */
+    .btn-delete {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 4px;
+      border: 1px solid #3a1a1a;
+      background: transparent;
+      color: var(--danger);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+
+    .btn-delete:hover {
+      background: #2a0e0e;
+      border-color: var(--danger);
+    }
+
+    .btn-delete:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ── Estado vacío / loading ── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+
+    .empty-state p {
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Botón reload ── */
+    .btn-reload {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-reload:hover { color: var(--text); border-color: var(--text); }
+
+    /* ── Formulario ── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 480px;
+    }
+
+    .form-row {
+      margin-bottom: 1.4rem;
+    }
+
+    .form-row label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .form-row input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 11px 14px;
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-row input:focus {
+      border-color: var(--accent);
+    }
+
+    .form-row input::placeholder { color: var(--muted); }
+
+    .form-row input.error { border-color: var(--danger); }
+
+    .field-error {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: 5px;
+      display: none;
+    }
+
+    .field-error.visible { display: block; }
+
+    /* ── Botón submit ── */
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      border-radius: 6px;
+      border: none;
+      background: var(--accent);
+      color: #0e0e0e;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover { background: #c4e050; }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { background: var(--accent-dim); cursor: not-allowed; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.2s;
+      pointer-events: none;
+      z-index: 100;
+      max-width: 320px;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #toast.success { border-color: var(--accent); color: var(--accent); }
+    #toast.error   { border-color: var(--danger); color: var(--danger); }
+
+    @media (max-width: 600px) {
+      .td-date { display: none; }
+      thead th:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="logo">// ventas_mgr</span>
+    <nav>
+      <button class="active" onclick="switchView('list')">Listado</button>
+      <button onclick="switchView('create')">Nueva venta</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ── VIEW: Listado ── -->
+    <div id="view-list" class="view active">
+
+      <div class="view-header">
+        <h1 class="view-title">Ventas <span>registradas</span></h1>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="count-badge" id="sale-count">— items</span>
+          <button class="btn-reload" onclick="loadSales()">Recargar</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Fecha</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="sales-tbody">
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <p>Bienvenido. Cargando...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ── VIEW: Nueva venta ── -->
+    <div id="view-create" class="view">
+
+      <div class="view-header">
+        <h1 class="view-title">Nueva <span>venta</span></h1>
+      </div>
+
+      <div class="form-card">
+        <div class="form-row">
+          <label for="input-nombre">Nombre del producto</label>
+          <input type="text" id="input-nombre" placeholder="Ej: Notebook Lenovo" autocomplete="off" />
+          <p class="field-error" id="err-nombre">El nombre es requerido.</p>
+        </div>
+
+        <div class="form-row">
+          <label for="input-precio">Precio (USD)</label>
+          <input type="number" id="input-precio" placeholder="0.00" min="0" step="0.01" autocomplete="off" />
+          <p class="field-error" id="err-precio">Ingresá un precio válido mayor a 0.</p>
+        </div>
+
+        <button class="btn-submit" id="btn-enviar" onclick="submitSale()">
+          Registrar venta
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const API_URL = "https://0cpjcacg7a.execute-api.us-east-1.amazonaws.com/Prod";
+
+    function getApiUrl() {
+      return API_URL.replace(/\/$/, '');
+    }
+
+    /* ── Navegacion ── */
+    function switchView(name) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('view-' + name).classList.add('active');
+      event.currentTarget.classList.add('active');
+      if (name === 'list') loadSales();
+    }
+
+    /* ── Toast ── */
+    let toastTimer;
+    function showToast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'show ' + type;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+    }
+
+    /* ── Cargar ventas ── */
+    async function loadSales() {
+      const url = getApiUrl();
+      const tbody = document.getElementById('sales-tbody');
+
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><span class="spinner"></span><p style="display:inline">Cargando...</p></div></td></tr>`;
+
+      try {
+        const res = await fetch(url + '/sales');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : (data.items || data.Items || []);
+
+        document.getElementById('sale-count').textContent = items.length + ' items';
+
+        if (items.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>No hay ventas registradas aun.</p></div></td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+          <tr id="row-${item.id}">
+            <td class="td-id" title="${item.id}">${item.id}</td>
+            <td>${item.producto}</td>
+            <td class="td-price">$${Number(item.monto || 0).toFixed(2)}</td>
+            <td class="td-date">${formatDate(item.createdAt)}</td>
+            <td>
+              <button class="btn-delete" onclick="deleteSale('${item.id}', this)">
+                Borrar
+              </button>
+            </td>
+          </tr>
+        `).join('');
+
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>Error al conectar con la API.<br>${e.message}</p></div></td></tr>`;
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    /* ── Borrar venta ── */
+    async function deleteSale(id, btn) {
+      const url = getApiUrl();
+
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      try {
+        const res = await fetch(url + '/sales/' + id, { method: 'DELETE' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        const row = document.getElementById('row-' + id);
+        row.style.transition = 'opacity 0.3s';
+        row.style.opacity = '0';
+        setTimeout(() => {
+          row.remove();
+          const count = document.querySelectorAll('#sales-tbody tr[id]').length;
+          document.getElementById('sale-count').textContent = count + ' items';
+          if (count === 0) loadSales();
+        }, 300);
+
+        showToast('Venta eliminada.', 'success');
+
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Borrar';
+        showToast('Error al borrar: ' + e.message, 'error');
+      }
+    }
+
+    /* ── Crear venta ── */
+    async function submitSale() {
+      const url = getApiUrl();
+      const producto = document.getElementById('input-nombre').value.trim();
+      const monto = parseFloat(document.getElementById('input-precio').value);
+
+      let valid = true;
+
+      document.getElementById('input-nombre').classList.remove('error');
+      document.getElementById('input-precio').classList.remove('error');
+      document.getElementById('err-nombre').classList.remove('visible');
+      document.getElementById('err-precio').classList.remove('visible');
+
+      if (!producto) {
+        document.getElementById('input-nombre').classList.add('error');
+        document.getElementById('err-nombre').classList.add('visible');
+        valid = false;
+      }
+
+      if (!monto || monto <= 0 || isNaN(monto)) {
+        document.getElementById('input-precio').classList.add('error');
+        document.getElementById('err-precio').classList.add('visible');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      const btn = document.getElementById('btn-enviar');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="border-top-color:#0e0e0e;border-color:rgba(0,0,0,0.2);border-top-color:#0e0e0e"></span> Enviando...';
+
+      try {
+        const res = await fetch(url + '/sales', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ producto, monto })
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        document.getElementById('input-nombre').value = '';
+        document.getElementById('input-precio').value = '';
+        showToast('Venta registrada correctamente.', 'success');
+
+      } catch (e) {
+        showToast('Error al registrar: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Registrar venta';
+      }
+    }
+
+    /* ── Helpers ── */
+    function formatDate(iso) {
+      if (!iso) return '—';
+      try {
+        return new Date(iso).toLocaleDateString('es-AR', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+      } catch { return iso; }
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    if (getApiUrl()) loadSales();
+  </script>
+
+</body>
+</html>

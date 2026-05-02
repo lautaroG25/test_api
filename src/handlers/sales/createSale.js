@@ -1,7 +1,7 @@
 const { PutCommand } = require("@aws-sdk/lib-dynamodb");
 const dynamo = require("../../db/dynamoClient");
 const { ok, err } = require("../../utils/response");
-const { v4: uuidv4 } = require("uuid");
+const { randomUUID } = require("crypto");
 
 exports.handler = async (event) => {
   console.log("EVENT:", JSON.stringify(event));
@@ -13,7 +13,7 @@ exports.handler = async (event) => {
 
     const body = JSON.parse(event.body);
     const item = {
-      id: uuidv4(),
+      id: randomUUID(),
       ...body,
       createdAt: new Date().toISOString()
     };

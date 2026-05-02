@@ -4,6 +4,11 @@ Transform: AWS::Serverless-2016-10-31
 Globals:
   Function:
     Runtime: nodejs20.x
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
 
 Resources:
   VentasTable:
@@ -17,7 +22,6 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-
   CreateSaleFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -28,6 +32,45 @@ Resources:
           Properties:
             Path: /sales
             Method: POST
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VentasTable
+  GetOneSaleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/sales/getSales.getOne
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sales/{id}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref VentasTable
+  GetAllSalesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/sales/getSales.getAll
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sales
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref VentasTable
+  DeleteSaleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/sales/deleteSale.handler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sales/{id}
+            Method: DELETE
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref VentasTable
