@@ -411,6 +411,109 @@
     #toast.success { border-color: var(--accent); color: var(--accent); }
     #toast.error   { border-color: var(--danger); color: var(--danger); }
 
+    /* ══════════════════════════════════
+       CURRICULUM
+    ══════════════════════════════════ */
+    .cv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .cv-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* línea de acento lateral */
+    .cv-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 16px; bottom: 16px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background: var(--accent);
+      opacity: 0.5;
+    }
+
+    .cv-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .cv-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .cv-category {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    /* ── skill row ── */
+    .skill-row {
+      margin-bottom: 0.85rem;
+    }
+
+    .skill-row:last-child { margin-bottom: 0; }
+
+    .skill-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 5px;
+    }
+
+    .skill-name {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .skill-pct {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── barra ── */
+    .bar-track {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--accent);
+      width: 0%;                      /* arranca en 0, anima con JS */
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* colores alternativos por categoría */
+    .cv-card:nth-child(2) .bar-fill { background: #60c0f0; }
+    .cv-card:nth-child(2)::before   { background: #60c0f0; }
+    .cv-card:nth-child(3) .bar-fill { background: #f0a060; }
+    .cv-card:nth-child(3)::before   { background: #f0a060; }
+    .cv-card:nth-child(4) .bar-fill { background: #c060f0; }
+    .cv-card:nth-child(4)::before   { background: #c060f0; }
+    .cv-card:nth-child(5) .bar-fill { background: #f06090; }
+    .cv-card:nth-child(5)::before   { background: #f06090; }
+
+
     @media (max-width: 600px) {
       .td-date { display: none; }
       thead th:nth-child(4) { display: none; }
@@ -420,10 +523,11 @@
 <body>
 
   <header>
-    <span class="logo">// ventas_mgr</span>
+    <span class="logo">// ventas_crud</span>
     <nav>
-      <button class="active" onclick="switchView('list')">Listado</button>
-      <button onclick="switchView('create')">Nueva venta</button>
+      <button class="active" onclick="switchView('list', this)">Listado</button>
+      <button onclick="switchView('create', this)">Nueva venta</button>
+      <button onclick="switchView('cv', this)">Curriculum</button>
     </nav>
   </header>
 
@@ -492,6 +596,16 @@
 
     </div>
 
+    <!-- ══════════════════════════════════
+         VIEW: CURRICULUM
+    ══════════════════════════════════ -->
+    <div id="view-cv" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Skills <span>&amp; stack</span></h1>
+      </div>
+
+      <div class="cv-grid" id="cv-grid"></div>
+
   </main>
 
   <div id="toast"></div>
@@ -504,12 +618,13 @@
     }
 
     /* ── Navegacion ── */
-    function switchView(name) {
+    function switchView(name, btn) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
       document.getElementById('view-' + name).classList.add('active');
-      event.currentTarget.classList.add('active');
+      btn.classList.add('active');
       if (name === 'list') loadSales();
+      if (name === 'cv')   animateBars();
     }
 
     /* ── Toast ── */
@@ -659,6 +774,101 @@
       return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    /* ══════════════════════════════════
+       DATOS DEL CURRICULUM
+       → Editá acá tus tecnologías y niveles
+    ══════════════════════════════════ */
+    const CV_DATA = [
+      {
+        icon: "🖥️",
+        category: "Frontend",
+        skills: [
+          { name: "JavaScript",   pct: 85 },
+          { name: "HTML / CSS",   pct: 75 },
+          { name: "Angular",      pct: 65 },
+          { name: "React",        pct: 35 },
+        ]
+      },
+      {
+        icon: "⚙️",
+        category: "Backend",
+        skills: [
+          { name: "Golang",       pct: 90 },
+          { name: "Python",       pct: 85 },
+          { name: "REST APIs",    pct: 80 },
+          { name: "Node.js",      pct: 75 },
+          { name: "Java",         pct: 75 },
+          { name: "gRPC",         pct: 60 },
+        ]
+      },
+      {
+        icon: "☁️",
+        category: "Cloud / DevOps",
+        skills: [
+          { name: "Docker",           pct: 80 },
+          { name: "AWS Lambda",       pct: 70 },
+          { name: "AWS DynamoDB",     pct: 65 },
+          { name: "AWS API Gateway",  pct: 65 },
+        ]
+      },
+      {
+        icon: "🗄️",
+        category: "Bases de datos",
+        skills: [
+          { name: "MongoDB",      pct: 85 },
+          { name: "PostgreSQL",   pct: 70 },
+          { name: "MySQL",        pct: 70 },
+          { name: "DynamoDB",     pct: 65 },
+        ]
+      },
+      {
+        icon: "🤖",
+        category: "AI / Agentes",
+        skills: [
+          { name: "Prompt Eng.",  pct: 75 },
+          { name: "Claude Agent",    pct: 65 },
+          { name: "Github copilot Agent",   pct: 65 },
+        ]
+      },
+    ];
+
+    /* ── Render curriculum ── */
+    function renderCV() {
+      const grid = document.getElementById('cv-grid');
+      grid.innerHTML = CV_DATA.map(cat => `
+        <div class="cv-card">
+          <div class="cv-card-header">
+            <span class="cv-icon">${cat.icon}</span>
+            <span class="cv-category">${cat.category}</span>
+          </div>
+          ${cat.skills.map(s => `
+            <div class="skill-row">
+              <div class="skill-meta">
+                <span class="skill-name">${s.name}</span>
+                <span class="skill-pct">${s.pct}%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" data-pct="${s.pct}"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+
+    /* Animar barras cuando la vista CV se activa */
+    function animateBars() {
+      document.querySelectorAll('.bar-fill').forEach(bar => {
+        bar.style.width = '0%';
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            bar.style.width = bar.dataset.pct + '%';
+          }, 80);
+        });
+      });
+    }
+
+    renderCV();
     if (getApiUrl()) loadSales();
   </script>
 
