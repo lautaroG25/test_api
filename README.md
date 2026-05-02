@@ -1,8 +1,11 @@
 # crud-ventas-api
 
-ES
+ES 
+
 Proyecto de ejemplo que implementa un CRUD de ventas utilizando una arquitectura serverless en AWS. Sirve como base de referencia y punto de partida — en el futuro se irán incorporando distintos módulos y funcionalidades escritos en otros lenguajes (Python, Go, etc.).
+
 EN
+
 Example project implementing a sales CRUD using a serverless architecture on AWS. It serves as a reference base and starting point — in the future different modules and functionalities written in other languages ​​(Python, Go, etc.) will be incorporated.
 
 ---
@@ -36,27 +39,38 @@ crud-ventas-api/
 ## Servicios AWS utilizados/AWS services used
 
 ### AWS Lambda
-ES
+ES 
+
 Ejecuta la lógica de cada endpoint como funciones independientes. No requiere servidor — escala automáticamente y solo genera costo cuando es invocada. Cada operación del CRUD es una función separada.
+
 EN
+
 Execute the logic of each endpoint as independent functions. No server required — it scales automatically and only incurs a cost when invoked. Each CRUD operation is a separate function.
 
 ### Amazon API Gateway
-ES
+ES 
+
 Expone las funciones Lambda como endpoints HTTP REST. Gestiona el enrutamiento, los métodos HTTP y los headers CORS. El stage de producción se llama `Prod`.
+
 EN
+
 Exposes Lambda functions as HTTP REST endpoints. Manages routing, HTTP methods and CORS headers. The production stage is called `Prod`.
 
 ### Amazon DynamoDB
-ES
+ES 
+
 Base de datos NoSQL serverless donde se persisten los registros. La tabla `Ventas` usa `id` (UUID) como partition key. El modo de facturación es `PAY_PER_REQUEST`, por lo que no hay costo fijo.
+
 EN
+
 NoSQL serverless database where records are persisted. The `Sales` table uses `id` (UUID) as the partition key. The billing mode is `PAY_PER_REQUEST`, so there is no fixed cost.
 
 ### Amazon S3
 ES
 Almacena el frontend estático (`index.html`). El bucket tiene acceso público bloqueado — el acceso se gestiona a través de CloudFront (en configuración).
+
 EN
+
 Stores the static frontend (`index.html`). The bucket has public access blocked — access is managed through CloudFront (in configuration).
 
 ---
@@ -86,8 +100,11 @@ POST /sales
 ## Despliegue/Deploy
 
 ES
+
 El proyecto usa **AWS SAM** para definir y deployar toda la infraestructura desde un único archivo `template.yaml`.
+
 EN
+
 The project uses **AWS SAM** to define and deploy the entire infrastructure from a single `template.yaml` file.
 
 ```bash
@@ -106,18 +123,24 @@ sam local start-api
 
 ## Frontend
 
-ES
+ES 
+
 El frontend es un único archivo HTML sin dependencias ni frameworks. Se sube directamente a S3:
+
 EN
+
 The frontend is a single HTML file with no dependencies or frameworks. It is uploaded directly to S3:
 
 ```bash
 aws s3 cp frontend/index.html s3://NOMBRE-DEL-BUCKET/
 ```
 
-ES
+ES 
+
 Incluye tres secciones: listado de ventas con opción de borrar, formulario de carga, y una vista de curriculum con stack tecnológico.
+
 EN
+
 It includes three sections: sales list with delete option, upload form, and a resume view with technological stack.
 
 ---
