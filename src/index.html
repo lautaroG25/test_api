@@ -6,6 +6,7 @@
   <title>Ventas & Compras</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zxing-js/0.20.0/umd/index.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -530,6 +531,105 @@
  
     footer a:hover { color: var(--accent); }
 
+    /* ── Experiencia laboral ── */
+    .exp-section {
+      margin-top: 2rem;
+    }
+
+    .exp-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    .exp-title span { color: var(--accent); }
+
+    .exp-list {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    /* línea vertical continua */
+    .exp-list::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 6px;
+      bottom: 6px;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .exp-item {
+      position: relative;
+      display: flex;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .exp-item:last-child { margin-bottom: 0; }
+
+    /* punto en la línea de tiempo */
+    .exp-dot {
+      position: absolute;
+      left: -18px;
+      top: 5px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      flex-shrink: 0;
+    }
+
+    .exp-body {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+
+    .exp-body:hover { border-color: var(--accent-dim); }
+
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .exp-role {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .exp-period {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .exp-company {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .exp-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
 
     @media (max-width: 600px) {
       .td-date { display: none; }
@@ -606,6 +706,18 @@
           <p class="field-error" id="err-precio">Ingresá un precio válido mayor a 0.</p>
         </div>
 
+        <label for="input-codigo">Código de barras</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="input-codigo" placeholder="Escaneá o ingresá manualmente" />
+          <button onclick="toggleScanner()" id="btn-scan" class="btn-scan">
+            Escanear
+          </button>
+        </div>
+        <div id="scanner-container" style="display:none;">
+          <video id="scanner-video"></video>
+          <button onclick="stopScanner()">Cerrar</button>
+        </div>
+
         <button class="btn-submit" id="btn-enviar" onclick="submitSale()">
           Registrar venta
         </button>
@@ -621,7 +733,65 @@
         <h1 class="view-title">Skills <span>&amp; stack</span></h1>
       </div>
 
-      <div class="cv-grid" id="cv-grid"></div>
+      <div class="cv-grid" id="cv-grid">
+        
+      </div>
+      <!-- ── Experiencia ── -->
+        <div class="exp-section">
+          <h2 class="exp-title">Experiencia <span>laboral</span>/ Employment <span>history</span></h2>
+
+          <div class="exp-list">
+
+            <div class="exp-item">
+              <div class="exp-dot"></div>
+              <div class="exp-body">
+                <div class="exp-header">
+                  <span class="exp-role">Software Engineer II</span>
+                  <span class="exp-period">2024 — 2026</span>
+                </div>
+                <span class="exp-company">JP Morgan Chase</span>
+                <p class="exp-desc"></p>
+              </div>
+            </div>
+
+            <div class="exp-item">
+              <div class="exp-dot"></div>
+              <div class="exp-body">
+                <div class="exp-header">
+                  <span class="exp-role">Senior Software Engineer</span>
+                  <span class="exp-period">2021 — 2024</span>
+                </div>
+                <span class="exp-company">IT Patagonia</span>
+                <p class="exp-desc"></p>
+              </div>
+            </div>
+
+            <div class="exp-item">
+              <div class="exp-dot"></div>
+              <div class="exp-body">
+                <div class="exp-header">
+                  <span class="exp-role">Semi-senior Software Engineer</span>
+                  <span class="exp-period">2020 — 2021</span>
+                </div>
+                <span class="exp-company">LP & Asociados</span>
+                <p class="exp-desc"></p>
+              </div>
+            </div>
+
+            <div class="exp-item">
+              <div class="exp-dot"></div>
+              <div class="exp-body">
+                <div class="exp-header">
+                  <span class="exp-role">Junior Software Engineer</span>
+                  <span class="exp-period">2018 — 2020</span>
+                </div>
+                <span class="exp-company">Siemens Argentina S.A.</span>
+                <p class="exp-desc"></p>
+              </div>
+            </div>
+
+          </div>
+        </div>
 
   </main>
 
@@ -800,7 +970,6 @@
 
     /* ══════════════════════════════════
        DATOS DEL CURRICULUM
-       → Editá acá tus tecnologías y niveles
     ══════════════════════════════════ */
     const CV_DATA = [
       {
@@ -890,6 +1059,26 @@
           }, 80);
         });
       });
+    }
+
+    const codeReader = new ZXing.BrowserMultiFormatReader();
+
+    async function toggleScanner() {
+      document.getElementById('scanner-container').style.display = 'block';
+
+      const videoEl = document.getElementById('scanner-video');
+
+      codeReader.decodeFromVideoDevice(null, videoEl, (result, err) => {
+        if (result) {
+          document.getElementById('input-codigo').value = result.getText();
+          stopScanner(); // cierra la cámara al detectar
+        }
+      });
+    }
+
+    function stopScanner() {
+      codeReader.reset();
+      document.getElementById('scanner-container').style.display = 'none';
     }
 
     renderCV();
